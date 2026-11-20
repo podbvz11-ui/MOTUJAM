@@ -66,8 +66,113 @@ namespace Motujam
             Show<NoticeScreen>("NoticeScreen").Init(this);   // 안내 문구 → 타이틀
         }
 
+        // 창 모드에서 고를 수 있는 해상도 (모두 16:9). 모니터보다 큰 것은 목록에서 빠진다.
+        static readonly Vector2Int[] Resolutions =
+        {
+            new Vector2Int(960, 540), new Vector2Int(1280, 720), new Vector2Int(1600, 900),
+            new Vector2Int(1920, 1080), new Vector2Int(2560, 1440), new Vector2Int(3840, 2160),
+        };
+
+        static int WindowIndex
+        {
+            get => Mathf.Clamp(PlayerPrefs.GetInt("windowRes", 1), 0, MaxWindowIndex);
+            set => PlayerPrefs.SetInt("windowRes", Mathf.Clamp(value, 0, MaxWindowIndex));
+        }
+
+        /// <summary>이 모니터에 들어가는 가장 큰 해상도의 번호.</summary>
+        static int MaxWindowIndex
+        {
+            get
+            {
+                int max = 0;
+                for (int i = 0; i < Resolutions.Length; i++)
+                    if (Resolutions[i].x <= Display.main.systemWidth && Resolutions[i].y <= Display.main.systemHeight) max = i;
+                return max;
+            }
+        }
+
+        /// <summary>지금 화면 상태를 글자로. 예: "전체 화면", "창 1280×720"</summary>
+        public static string ScreenLabel
+        {
+            get
+            {
+                if (pendingLabel != null) return pendingLabel;
+                return Screen.fullScreen ? "전체 화면" : $"창 {Screen.width}×{Screen.height}";
+            }
+        }
+
+        static string pendingLabel;   // 해상도는 다음 프레임에 바뀌므로, 바꾼 직후에는 이 글자를 보여 준다
+        static float pendingUntil;
+
+        /// <summary>전체 화면 ↔ 창 모드. 창 모드는 마지막으로 고른 해상도로 열린다. 선택은 다음 실행 때도 유지된다.</summary>
+        public static void ToggleWindowed()
+        {
+            if (Screen.fullScreen) ApplyWindow();
+            else
+            {
+                Screen.SetResolution(Display.main.systemWidth, Display.main.systemHeight, FullScreenMode.FullScreenWindow);
+                Pending("전체 화면");
+            }
+        }
+
+        /// <summary>창 모드 해상도를 한 단계 키우거나(+1) 줄인다(-1). 전체 화면이었다면 창 모드로 바뀐다.</summary>
+        public static void StepResolution(int step)
+        {
+            if (!Screen.fullScreen) WindowIndex += step;
+            ApplyWindow();
+        }
+
+        static void ApplyWindow()
+        {
+            Vector2Int r = Resolutions[WindowIndex];
+            Screen.SetResolution(r.x, r.y, FullScreenMode.Windowed);
+            Pending($"창 {r.x}×{r.y}");
+        }
+
+        static void Pending(string label)
+        {
+            pendingLabel = label;
+            pendingUntil = Time.unscaledTime + 0.5f;
+        }
+
+        Text toast;
+        float toastT;
+
+        void ShowToast(string text)
+        {
+            if (toast == null)
+            {
+                toast = UI.Txt("Toast", canvas.transform, "", 34, TextAnchor.MiddleCenter, Color.white, 0, 420, 900, 60);
+                toast.fontStyle = FontStyle.Bold;
+                Art.Neon(toast, new Color(0, 0, 0, 0.85f), 3f);
+            }
+            toast.transform.SetAsLastSibling();
+            toast.text = text;
+            toastT = 2f;
+        }
+
         void Update()
         {
+            // 어느 화면에서든: F11 전체 화면 ↔ 창 모드, F8 / F9 창 해상도 줄이기 / 키우기 (F10 은 윈도우가 메뉴 키로 쓰므로 피한다)
+            var kb = UnityEngine.InputSystem.Keyboard.current;
+            if (kb != null)
+            {
+                bool changed = true;
+                if (kb.f11Key.wasPressedThisFrame) ToggleWindowed();
+                else if (kb.f8Key.wasPressedThisFrame) StepResolution(-1);
+                else if (kb.f9Key.wasPressedThisFrame) StepResolution(1);
+                else changed = false;
+                if (changed) { Sfx.Change(); ShowToast("화면: " + ScreenLabel); }
+            }
+            if (pendingLabel != null && Time.unscaledTime > pendingUntil) pendingLabel = null;
+            if (toast != null && toastT > 0f)
+            {
+                toastT -= Time.unscaledDeltaTime;
+                Color tc = toast.color;
+                tc.a = Mathf.Clamp01(toastT * 2f);
+                toast.color = tc;
+            }
+
             Color c = fade.color;
             if (c.a <= 0f) return;
             c.a = Mathf.MoveTowards(c.a, 0f, Time.unscaledDeltaTime * 3.5f);

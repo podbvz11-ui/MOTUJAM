@@ -87,8 +87,8 @@ namespace Motujam
             settingText = UI.Txt("Settings", infoGroup, "", 28, TextAnchor.MiddleCenter, new Color(0.6f, 0.9f, 1f), 480, -350, 800, 50);
             loadingText = UI.Txt("Loading", infoGroup, "", 40, TextAnchor.MiddleCenter, Color.white, 480, -420, 800, 60);
 
-            var help = UI.Txt("Help", rt, "↑↓ 곡 선택    ←→ 키 / 난이도    ENTER 시작    ESC 타이틀    F1/F2 노트 속도    F3/F4 판정 보정    F5 새로고침    F6 배경 영상",
-                25, TextAnchor.MiddleCenter, new Color(1, 1, 1, 0.55f), 0, -500, 1880, 50);
+            var help = UI.Txt("Help", rt, "↑↓ 곡 선택    ←→ 키 / 난이도    ENTER 시작    ESC 타이틀    F1/F2 노트 속도    F3/F4 판정 보정    F5 새로고침    F6 배경 영상    F8/F9 해상도    F11 창 모드",
+                22, TextAnchor.MiddleCenter, new Color(1, 1, 1, 0.55f), 0, -500, 1880, 50);
 
             // 등장: 양쪽 창이 옆에서 미끄러져 들어온다
             Tween.SlideIn(this, header, new Vector2(0, 90), 0.35f);

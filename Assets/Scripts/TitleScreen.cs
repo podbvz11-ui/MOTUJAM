@@ -46,7 +46,7 @@ namespace Motujam
             press = UI.Txt("Press", rt, "PRESS ENTER", 44, TextAnchor.MiddleCenter, Color.white, 0, -300, 900, 70);
             press.fontStyle = FontStyle.BoldAndItalic;
             Art.Neon(press, new Color(0.1f, 0.6f, 1f, 0.7f), 3f);
-            var keys = UI.Txt("Keys", rt, "4K  A S ; '        6K  A S D L ; '        ESC 게임 끝내기", 26, TextAnchor.MiddleCenter, new Color(1, 1, 1, 0.55f), 0, -480, 1600, 50);
+            var keys = UI.Txt("Keys", rt, "4K  A S ; '        6K  A S D L ; '        F8/F9 해상도        F11 창 모드        ESC 게임 끝내기", 26, TextAnchor.MiddleCenter, new Color(1, 1, 1, 0.55f), 0, -480, 1600, 50);
 
             // 등장: 로고가 크게 나타나며 자리 잡고, 캐릭터가 아래에서 올라온다
             Tween.Run(this, 0.6f, k => logoIn = k, 0.15f);
