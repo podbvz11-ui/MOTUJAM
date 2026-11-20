@@ -1,0 +1,35 @@
+# Unity
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+*.csproj
+*.sln
+*.slnx
+*.suo
+*.user
+*.pidb
+*.booproj
+.vs/
+.vscode/
+.idea/
+crashlytics-build.properties
+
+# 곡의 음원·영상은 용량과 저작권 때문에 저장소에 넣지 않는다 (릴리스의 게임 zip 에 들어 있다)
+/Assets/StreamingAssets/Songs/**/audio.*
+/Assets/StreamingAssets/Songs/**/video.*
+/SongSource~/
+
+# 채보 생성 도구의 작업물
+/Tools~/venv/
+/Tools~/stems/
+/Tools~/diag/
+/Tools~/backup_charts*/
+/Tools~/__pycache__/
+/Tools~/*.log
+/Tools~/diffs_report.txt
+/Tools~/diag_*.py
